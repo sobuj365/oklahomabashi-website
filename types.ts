@@ -14,6 +14,10 @@ export interface Event {
   price: number; // in cents
   image_url: string;
   capacity?: number;
+  category?: string;
+  status?: 'active' | 'draft' | 'archived' | 'cancelled';
+  tickets_sold?: number;
+  revenue?: number;
 }
 
 export interface Ticket {
@@ -23,6 +27,13 @@ export interface Ticket {
   event_date: number;
   status: 'valid' | 'used';
   qr_code: string;
+}
+
+export interface AdminStats {
+  users: number;
+  events: number;
+  tickets: number;
+  revenue: number;
 }
 
 export interface BlogPost {

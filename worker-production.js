@@ -15,18 +15,32 @@
 
 const ALLOWED_ORIGINS_DEFAULT = ['https://oklahomabashi.com', 'http://localhost:3000'];
 
+const parseAllowedOrigins = (env) => {
+  const raw = env?.ALLOWED_ORIGINS;
+  if (!raw) return ALLOWED_ORIGINS_DEFAULT;
+
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : ALLOWED_ORIGINS_DEFAULT;
+  } catch {
+    return raw.split(',').map((entry) => entry.trim()).filter(Boolean);
+  }
+};
+
 // ============================================================================
 // UTILITY FUNCTIONS
 // ============================================================================
 
 const generateUUID = () => crypto.randomUUID();
 
-const getCorsHeaders = (origin) => {
-  const allowedOrigins = ALLOWED_ORIGINS_DEFAULT;
-  const isAllowed = allowedOrigins.includes(origin);
-  
+const getCorsHeaders = (origin, env) => {
+  const allowedOrigins = parseAllowedOrigins(env);
+  const isWildcard = allowedOrigins.includes('*');
+  const isAllowed = isWildcard || (origin && allowedOrigins.includes(origin));
+  const allowOrigin = isAllowed ? (isWildcard ? '*' : origin) : ALLOWED_ORIGINS_DEFAULT[0];
+
   return {
-    'Access-Control-Allow-Origin': isAllowed ? origin : 'https://oklahomabashi.com',
+    'Access-Control-Allow-Origin': allowOrigin,
     'Access-Control-Allow-Methods': 'GET, HEAD, POST, OPTIONS, PUT, DELETE',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     'Access-Control-Max-Age': '86400',
@@ -273,7 +287,7 @@ async function verifyStripeWebhook(request, secret) {
 export default {
   async fetch(request, env, ctx) {
     const origin = request.headers.get('Origin') || 'https://oklahomabashi.com';
-    const corsHeaders = getCorsHeaders(origin);
+    const corsHeaders = getCorsHeaders(origin, env);
     
     if (request.method === 'OPTIONS') {
       return new Response(null, { headers: corsHeaders });
@@ -717,8 +731,8 @@ export default {
         const events = await env.DB.prepare('SELECT COUNT(*) as count FROM events WHERE status = ?').bind('active').first();
         const tickets = await env.DB.prepare('SELECT COUNT(*) as count FROM tickets WHERE status = ?').bind('valid').first();
         const revenue = await env.DB.prepare(
-          'SELECT SUM(e.price) as total FROM transactions t JOIN events e ON t.event_id = e.id WHERE t.status = ?'
-        ).bind('completed').first();
+          "SELECT SUM(e.price) as total FROM tickets t JOIN events e ON t.event_id = e.id WHERE t.status IN ('valid','used')"
+        ).first();
 
         return Response.json({
           users: users?.count || 0,
@@ -726,6 +740,28 @@ export default {
           tickets: tickets?.count || 0,
           revenue: revenue?.total || 0,
         }, { headers: corsHeaders });
+      }
+
+      // GET /admin/events
+      if (path === '/admin/events' && request.method === 'GET') {
+        if (!adminUser || adminUser.role !== 'admin') {
+          return Response.json({ error: 'Forbidden' }, { status: 403, headers: corsHeaders });
+        }
+
+        const { results } = await env.DB.prepare(`
+          SELECT e.*,
+                 COALESCE(t.tickets_sold, 0) as tickets_sold,
+                 COALESCE(t.tickets_sold, 0) * e.price as revenue
+          FROM events e
+          LEFT JOIN (
+            SELECT event_id, COUNT(*) as tickets_sold
+            FROM tickets
+            GROUP BY event_id
+          ) t ON e.id = t.event_id
+          ORDER BY e.date DESC
+        `).all();
+
+        return Response.json(results || [], { headers: corsHeaders });
       }
 
       // POST /admin/events
@@ -741,13 +777,16 @@ export default {
           return Response.json({ error: 'Invalid JSON' }, { status: 400, headers: corsHeaders });
         }
 
-        const { title, description, date, location, price, image_url, capacity, category } = body;
+        const { title, description, date, location, price, image_url, capacity, category, status } = body;
 
         if (!title || !date || !location) {
           return Response.json({ error: 'Missing required fields' }, { status: 400, headers: corsHeaders });
         }
 
         const id = generateUUID();
+
+        const allowedStatuses = ['active', 'draft', 'archived', 'cancelled'];
+        const normalizedStatus = allowedStatuses.includes(status) ? status : 'active';
 
         await env.DB.prepare(
           'INSERT INTO events (id, title, description, date, location, price, image_url, capacity, category, status, created_at, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
@@ -761,7 +800,7 @@ export default {
           image_url || '',
           capacity || null,
           category || 'general',
-          'active',
+          normalizedStatus,
           new Date().toISOString(),
           adminUser.userId
         ).run();
@@ -783,10 +822,13 @@ export default {
           return Response.json({ error: 'Invalid JSON' }, { status: 400, headers: corsHeaders });
         }
 
-        const { title, description, date, location, price, image_url, capacity, status } = body;
+        const { title, description, date, location, price, image_url, capacity, status, category } = body;
+
+        const allowedStatuses = ['active', 'draft', 'archived', 'cancelled'];
+        const normalizedStatus = allowedStatuses.includes(status) ? status : 'active';
 
         await env.DB.prepare(
-          'UPDATE events SET title = ?, description = ?, date = ?, location = ?, price = ?, image_url = ?, capacity = ?, status = ?, updated_at = ? WHERE id = ?'
+          'UPDATE events SET title = ?, description = ?, date = ?, location = ?, price = ?, image_url = ?, capacity = ?, status = ?, category = ?, updated_at = ? WHERE id = ?'
         ).bind(
           title,
           description || '',
@@ -795,7 +837,8 @@ export default {
           price || 0,
           image_url || '',
           capacity || null,
-          status || 'active',
+          normalizedStatus,
+          category || 'general',
           new Date().toISOString(),
           id
         ).run();
@@ -892,7 +935,7 @@ export default {
 
     } catch (err) {
       console.error('Worker error:', err);
-      const corsHeaders = getCorsHeaders(request.headers.get('Origin') || 'https://oklahomabashi.com');
+      const corsHeaders = getCorsHeaders(request.headers.get('Origin') || 'https://oklahomabashi.com', env);
       return Response.json(
         { error: err.message || 'Internal server error' },
         { status: 500, headers: corsHeaders }

@@ -1,5 +1,5 @@
 import { API_URL, MOCK_EVENTS } from '../constants';
-import { User, Event, Ticket } from '../types';
+import { User, Event, Ticket, AdminStats } from '../types';
 
 // Helper to handle API requests
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
@@ -66,6 +66,23 @@ export const api = {
     list: () => request<Ticket[]>('/user/tickets'),
   },
   admin: {
-    stats: () => request<any>('/admin/stats'),
+    stats: () => request<AdminStats>('/admin/stats'),
+    events: {
+      list: () => request<Event[]>('/admin/events'),
+      create: (data: any) =>
+        request<{ success: boolean; id: string }>('/admin/events', {
+          method: 'POST',
+          body: JSON.stringify(data)
+        }),
+      update: (id: string, data: any) =>
+        request<{ success: boolean }>(`/admin/events/${id}`, {
+          method: 'PUT',
+          body: JSON.stringify(data)
+        }),
+      remove: (id: string) =>
+        request<{ success: boolean }>(`/admin/events/${id}`, {
+          method: 'DELETE'
+        })
+    }
   }
 };
