@@ -286,6 +286,12 @@ async function verifyStripeWebhook(request, secret) {
 
 export default {
   async fetch(request, env, ctx) {
+    const url = new URL(request.url);
+    if (url.protocol === 'http:') {
+      url.protocol = 'https:';
+      return Response.redirect(url.toString(), 301);
+    }
+
     const origin = request.headers.get('Origin') || 'https://oklahomabashi.com';
     const corsHeaders = getCorsHeaders(origin, env);
     
@@ -293,7 +299,6 @@ export default {
       return new Response(null, { headers: corsHeaders });
     }
 
-    const url = new URL(request.url);
     const path = url.pathname;
 
     try {
@@ -589,10 +594,19 @@ export default {
         }
 
         const { event_id, quantity = 1 } = body;
+        const parsedQuantity = Number(quantity);
+
+        if (!Number.isInteger(parsedQuantity) || parsedQuantity < 1 || parsedQuantity > 20) {
+          return Response.json({ error: 'Invalid ticket quantity' }, { status: 400, headers: corsHeaders });
+        }
 
         const event = await env.DB.prepare('SELECT * FROM events WHERE id = ?').bind(event_id).first();
         if (!event) {
           return Response.json({ error: 'Event not found' }, { status: 404, headers: corsHeaders });
+        }
+
+        if (event.status && event.status !== 'active') {
+          return Response.json({ error: 'Event is not available' }, { status: 400, headers: corsHeaders });
         }
 
         // Check if already has ticket
@@ -610,11 +624,13 @@ export default {
             'SELECT COUNT(*) as count FROM tickets WHERE event_id = ?'
           ).bind(event_id).all();
           const ticketCount = results?.[0]?.count || 0;
-          
-          if (ticketCount >= event.capacity) {
+
+          if (ticketCount + parsedQuantity > event.capacity) {
             return Response.json({ error: 'Event is at capacity' }, { status: 400, headers: corsHeaders });
           }
         }
+
+        const unitAmount = Math.max(0, Math.round(event.price || 0));
 
         // Create Stripe payment intent
         const stripeResponse = await fetch('https://api.stripe.com/v1/checkout/sessions', {
@@ -626,13 +642,13 @@ export default {
           body: new URLSearchParams({
             'payment_method_types[]': 'card',
             'line_items[0][price_data][currency]': 'usd',
-            'line_items[0][price_data][unit_amount]': String(Math.round(event.price * quantity)),
+            'line_items[0][price_data][unit_amount]': String(unitAmount),
             'line_items[0][price_data][product_data][name]': event.title,
-            'line_items[0][quantity]': String(quantity),
+            'line_items[0][quantity]': String(parsedQuantity),
             'mode': 'payment',
             'success_url': `https://oklahomabashi.com/ticket-success?session_id={CHECKOUT_SESSION_ID}`,
             'cancel_url': `https://oklahomabashi.com/events/${event_id}`,
-            'client_reference_id': `${user.userId}:${event_id}:${quantity}`,
+            'client_reference_id': `${user.userId}:${event_id}:${parsedQuantity}`,
             'customer_email': user.email,
           }),
         });

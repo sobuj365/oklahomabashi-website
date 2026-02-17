@@ -184,6 +184,11 @@ export default {
       return new Response(null, { headers: corsHeaders });
     }
 
+      const url = new URL(request.url);
+      if (url.protocol === 'http:') {
+        url.protocol = 'https:';
+        return Response.redirect(url.toString(), 301);
+      }
     const url = new URL(request.url);
     const path = url.pathname;
 
@@ -361,10 +366,18 @@ export default {
           );
         }
 
-        const { event_id } = body;
+        const { event_id, quantity = 1 } = body;
+        const parsedQuantity = Number(quantity);
         if (!event_id) {
           return Response.json(
             { error: 'event_id required' },
+            { status: 400, headers: corsHeaders }
+          );
+        }
+
+        if (!Number.isInteger(parsedQuantity) || parsedQuantity < 1 || parsedQuantity > 20) {
+          return Response.json(
+            { error: 'Invalid ticket quantity' },
             { status: 400, headers: corsHeaders }
           );
         }
@@ -395,7 +408,7 @@ export default {
             'SELECT COUNT(*) as count FROM tickets WHERE event_id = ?'
           ).bind(event_id).all();
           const ticketCount = tickets?.[0]?.count || 0;
-          if (ticketCount >= event.capacity) {
+          if (ticketCount + parsedQuantity > event.capacity) {
             return Response.json(
               { error: 'Event is at capacity' },
               { status: 400, headers: corsHeaders }
@@ -403,25 +416,30 @@ export default {
           }
         }
 
-        const ticketId = generateUUID();
-        const qrCode = `${event_id}:${user.id}:${ticketId}`;
-        
-        // TODO: Verify Stripe payment here if this is a paid event
-        // Payment verification would go here before creating the ticket
-        
-        await env.DB.prepare(
-          'INSERT INTO tickets (id, user_id, event_id, qr_code, status, created_at) VALUES (?, ?, ?, ?, ?, ?)'
-        ).bind(ticketId, user.id, event_id, qrCode, 'valid', new Date().toISOString()).run();
-          
-        // Cache for quick lookup at door
-        await env.KV.put(`ticket:${ticketId}`, JSON.stringify({
-          valid: true,
-          event_id,
-          user_id: user.id,
-          used: false
-        }), { expirationTtl: 7776000 }); // 90 days
+        const ticketIds = [];
+        for (let i = 0; i < parsedQuantity; i += 1) {
+          const ticketId = generateUUID();
+          const qrCode = `${event_id}:${user.id}:${ticketId}`;
 
-        return Response.json({ success: true, ticketId }, { headers: corsHeaders });
+          // TODO: Verify Stripe payment here if this is a paid event
+          // Payment verification would go here before creating the ticket
+
+          await env.DB.prepare(
+            'INSERT INTO tickets (id, user_id, event_id, qr_code, status, created_at) VALUES (?, ?, ?, ?, ?, ?)'
+          ).bind(ticketId, user.id, event_id, qrCode, 'valid', new Date().toISOString()).run();
+
+          // Cache for quick lookup at door
+          await env.KV.put(`ticket:${ticketId}`, JSON.stringify({
+            valid: true,
+            event_id,
+            user_id: user.id,
+            used: false
+          }), { expirationTtl: 7776000 }); // 90 days
+
+          ticketIds.push(ticketId);
+        }
+
+        return Response.json({ success: true, ticketIds }, { headers: corsHeaders });
       }
       
       if (path === '/user/tickets' && request.method === 'GET') {
