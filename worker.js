@@ -111,14 +111,25 @@ export default {
       }
 
       // --- PUBLIC ROUTES ---
+      // List Events
       if (path === '/events' && request.method === 'GET') {
         const { results } = await env.DB.prepare('SELECT * FROM events ORDER BY date ASC').all();
-        return Response.json(results, { headers: corsHeaders });
+        return Response.json(results || [], { headers: corsHeaders });
+      }
+
+      // Get Single Event
+      // Regex matches /events/uuid-or-id
+      if (path.match(/^\/events\/[^/]+$/) && request.method === 'GET') {
+        const id = path.split('/').pop();
+        const event = await env.DB.prepare('SELECT * FROM events WHERE id = ?').bind(id).first();
+        if (!event) return Response.json({ error: 'Event not found' }, { status: 404, headers: corsHeaders });
+        return Response.json(event, { headers: corsHeaders });
       }
       
+      // List Blog Posts
       if (path === '/blog' && request.method === 'GET') {
           const { results } = await env.DB.prepare('SELECT * FROM blog_posts ORDER BY published_at DESC').all();
-          return Response.json(results, { headers: corsHeaders });
+          return Response.json(results || [], { headers: corsHeaders });
       }
 
       // --- PROTECTED ROUTES ---
@@ -149,7 +160,7 @@ export default {
             JOIN events e ON t.event_id = e.id 
             WHERE t.user_id = ?
           `).bind(user.id).all();
-          return Response.json(results, { headers: corsHeaders });
+          return Response.json(results || [], { headers: corsHeaders });
       }
 
       // --- ADMIN ROUTES ---
@@ -164,9 +175,9 @@ export default {
             const revenue = await env.DB.prepare('SELECT sum(price) as total FROM events e JOIN tickets t ON e.id = t.event_id').first();
             
             return Response.json({
-                users: usersCount.count,
-                tickets: ticketsCount.count,
-                revenue: revenue.total || 0
+                users: usersCount?.count || 0,
+                tickets: ticketsCount?.count || 0,
+                revenue: revenue?.total || 0
             }, { headers: corsHeaders });
         }
       }

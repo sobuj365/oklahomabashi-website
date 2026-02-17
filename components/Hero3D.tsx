@@ -3,6 +3,17 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { Sphere, MeshDistortMaterial, Float, Stars } from '@react-three/drei';
 import * as THREE from 'three';
 
+// Fix for TypeScript not recognizing R3F elements in JSX
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      ambientLight: any;
+      directionalLight: any;
+      pointLight: any;
+    }
+  }
+}
+
 const AnimatedShape = () => {
   const meshRef = useRef<THREE.Mesh>(null!);
   
