@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS users (
     password_hash TEXT NOT NULL,
     full_name TEXT,
     role TEXT DEFAULT 'user', -- 'user', 'admin', 'volunteer'
-    created_at INTEGER DEFAULT (strftime('%s', 'now'))
+    created_at TEXT DEFAULT (datetime('now'))
 );
 
 -- Events Table
@@ -13,12 +13,12 @@ CREATE TABLE IF NOT EXISTS events (
     id TEXT PRIMARY KEY,
     title TEXT NOT NULL,
     description TEXT,
-    date INTEGER NOT NULL,
+    date INTEGER NOT NULL, -- Unix timestamp
     location TEXT NOT NULL,
     price INTEGER DEFAULT 0, -- in cents
     image_url TEXT,
     capacity INTEGER,
-    created_at INTEGER DEFAULT (strftime('%s', 'now'))
+    created_at TEXT DEFAULT (datetime('now'))
 );
 
 -- Tickets Table
@@ -28,7 +28,8 @@ CREATE TABLE IF NOT EXISTS tickets (
     event_id TEXT NOT NULL,
     status TEXT DEFAULT 'valid', -- 'valid', 'used', 'refunded'
     qr_code TEXT,
-    purchase_date INTEGER DEFAULT (strftime('%s', 'now')),
+    created_at TEXT DEFAULT (datetime('now')),
+    used_at TEXT,
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (event_id) REFERENCES events(id)
 );
@@ -39,7 +40,7 @@ CREATE TABLE IF NOT EXISTS blog_posts (
     title TEXT NOT NULL,
     content TEXT NOT NULL,
     author_id TEXT NOT NULL,
-    published_at INTEGER DEFAULT (strftime('%s', 'now')),
+    published_at TEXT DEFAULT (datetime('now')),
     FOREIGN KEY (author_id) REFERENCES users(id)
 );
 
@@ -47,6 +48,7 @@ CREATE TABLE IF NOT EXISTS blog_posts (
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_tickets_user ON tickets(user_id);
 CREATE INDEX IF NOT EXISTS idx_tickets_event ON tickets(event_id);
+CREATE INDEX IF NOT EXISTS idx_tickets_status ON tickets(status);
 CREATE INDEX IF NOT EXISTS idx_events_date ON events(date);
 
 -- Seed Admin (Password: admin123 - strictly for demo, change in prod)

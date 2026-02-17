@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { Event } from '../types';
 
 interface Props {
@@ -7,6 +8,17 @@ interface Props {
 }
 
 const EventCard: React.FC<Props> = ({ event }) => {
+  const navigate = useNavigate();
+
+  const handleGetTickets = () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+    // TODO: Implement ticket purchase flow
+    alert(`Ticket purchase for "${event.title}" - Feature coming soon!`);
+  };
   return (
     <motion.div
       whileHover={{ y: -10 }}
@@ -36,7 +48,10 @@ const EventCard: React.FC<Props> = ({ event }) => {
         <p className="text-gray-400 text-sm mb-4 line-clamp-2">
           {event.description}
         </p>
-        <button className="w-full py-3 bg-white/5 hover:bg-okla-600 border border-white/10 hover:border-okla-600 rounded-lg text-white font-semibold transition-all flex items-center justify-center gap-2">
+        <button 
+          onClick={handleGetTickets}
+          className="w-full py-3 bg-white/5 hover:bg-okla-600 border border-white/10 hover:border-okla-600 rounded-lg text-white font-semibold transition-all flex items-center justify-center gap-2"
+        >
           <span>Get Tickets</span>
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />

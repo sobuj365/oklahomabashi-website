@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -12,6 +13,19 @@ const Navbar = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Check authentication state
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    setIsLoggedIn(!!token);
+  }, [location]); // Re-check when route changes
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setIsLoggedIn(false);
+    window.location.href = '/';
+  };
 
   const navLinks = [
     { name: 'Events', path: '/events' },
@@ -47,9 +61,23 @@ const Navbar = () => {
               </Link>
             ))}
             
-            <Link to="/login" className="px-5 py-2 rounded-full border border-okla-500 text-okla-500 hover:bg-okla-500 hover:text-white transition-all text-sm font-medium">
-              Sign In
-            </Link>
+            {isLoggedIn ? (
+              <div className="flex items-center space-x-4">
+                <Link to="/dashboard" className="text-sm font-medium text-okla-500 hover:text-okla-400 transition-all">
+                  Dashboard
+                </Link>
+                <button 
+                  onClick={handleLogout}
+                  className="px-5 py-2 rounded-full bg-red-600/20 hover:bg-red-600/40 border border-red-500/50 text-red-400 transition-all text-sm font-medium"
+                >
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <Link to="/login" className="px-5 py-2 rounded-full border border-okla-500 text-okla-500 hover:bg-okla-500 hover:text-white transition-all text-sm font-medium">
+                Sign In
+              </Link>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -90,13 +118,34 @@ const Navbar = () => {
                   {link.name}
                 </Link>
               ))}
-              <Link 
-                to="/login"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-3 text-base font-medium text-okla-500 hover:bg-white/5 rounded-md"
-              >
-                Sign In
-              </Link>
+              {isLoggedIn ? (
+                <>
+                  <Link 
+                    to="/dashboard"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block px-3 py-3 text-base font-medium text-okla-500 hover:bg-white/5 rounded-md"
+                  >
+                    Dashboard
+                  </Link>
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full text-left px-3 py-3 text-base font-medium text-red-400 hover:bg-white/5 rounded-md"
+                  >
+                    Sign Out
+                  </button>
+                </>
+              ) : (
+                <Link 
+                  to="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-3 py-3 text-base font-medium text-okla-500 hover:bg-white/5 rounded-md"
+                >
+                  Sign In
+                </Link>
+              )}
             </div>
           </motion.div>
         )}

@@ -1,6 +1,7 @@
-// In production, this would change based on environment variables or hostname
-// For Cloudflare manual deploy, this points to the worker route
-export const API_URL = 'https://api.oklahomabashi.com';
+// API URL from environment variables or defaults
+// For development: http://localhost:8787 (Cloudflare Worker local)
+// For production: https://api.oklahomabashi.com
+export const API_URL = import.meta.env.VITE_API_URL || 'https://api.oklahomabashi.com';
 
 export const MOCK_EVENTS = [
   {

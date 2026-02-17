@@ -6,33 +6,6 @@
     <title>OKLAHOMABASHI | Community Platform</title>
     <meta name="description" content="Connecting the Bangladeshi community in Oklahoma through culture, events, and support." />
     
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              okla: {
-                50: '#f0fdf4',
-                100: '#dcfce7',
-                500: '#22c55e', // Green for BD flag reference
-                600: '#16a34a',
-                900: '#14532d',
-                dark: '#0f172a',
-                glass: 'rgba(255, 255, 255, 0.1)'
-              },
-              bdr: '#f43f5e' // Red for BD flag
-            },
-            fontFamily: {
-              sans: ['Inter', 'sans-serif'],
-              display: ['Orbitron', 'sans-serif'],
-            }
-          }
-        }
-      }
-    </script>
-    
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     
@@ -55,23 +28,9 @@
         -webkit-text-fill-color: transparent;
       }
     </style>
-  <script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@^19.2.4",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
-    "react/": "https://esm.sh/react@^19.2.4/",
-    "react-router-dom": "https://esm.sh/react-router-dom@^7.13.0",
-    "recharts": "https://esm.sh/recharts@^3.7.0",
-    "three": "https://esm.sh/three@^0.182.0",
-    "framer-motion": "https://esm.sh/framer-motion@^12.34.1",
-    "@react-three/drei": "https://esm.sh/@react-three/drei@^10.7.7",
-    "@react-three/fiber": "https://esm.sh/@react-three/fiber@^9.5.0"
-  }
-}
-</script>
-</head>
+  </head>
   <body>
     <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
   </body>
 </html>

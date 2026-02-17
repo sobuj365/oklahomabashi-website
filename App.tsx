@@ -22,10 +22,12 @@ const ProtectedRoute = ({ children, role }: { children: React.ReactNode, role?: 
   const userStr = localStorage.getItem('user');
   const user = userStr ? JSON.parse(userStr) : null;
 
-  if (!token) {
+  // If no token or invalid user data, redirect to login
+  if (!token || !user) {
     return <Navigate to="/login" replace />;
   }
 
+  // If a specific role is required, check if user has that role
   if (role && user?.role !== role) {
     return <Navigate to="/" replace />;
   }
