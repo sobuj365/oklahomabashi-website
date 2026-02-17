@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
-import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import AdminDashboard from './pages/AdminDashboard';
+
+// Lazy load Home (which contains Hero3D with Three.js)
+const Home = lazy(() => import('./pages/Home'));
 
 // Placeholder for sections in development
 const PlaceholderPage = ({ title }: { title: string }) => (
@@ -22,12 +24,10 @@ const ProtectedRoute = ({ children, role }: { children: React.ReactNode, role?: 
   const userStr = localStorage.getItem('user');
   const user = userStr ? JSON.parse(userStr) : null;
 
-  // If no token or invalid user data, redirect to login
   if (!token || !user) {
     return <Navigate to="/login" replace />;
   }
 
-  // If a specific role is required, check if user has that role
   if (role && user?.role !== role) {
     return <Navigate to="/" replace />;
   }
@@ -41,8 +41,8 @@ function App() {
       <div className="min-h-screen bg-okla-dark text-white selection:bg-okla-500 selection:text-white">
         <Navbar />
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/events" element={<Home />} /> {/* Reuse Home for events listing for now */}
+          <Route path="/" element={<Suspense fallback={<div className="min-h-screen bg-okla-dark"></div>}><Home /></Suspense>} />
+          <Route path="/events" element={<Suspense fallback={<div className="min-h-screen bg-okla-dark"></div>}><Home /></Suspense>} />
           <Route path="/blog" element={<PlaceholderPage title="Community Blog" />} />
           <Route path="/about" element={<PlaceholderPage title="About Us" />} />
           <Route path="/donate" element={<PlaceholderPage title="Make a Donation" />} />
@@ -58,7 +58,6 @@ function App() {
               </ProtectedRoute>
             } 
           />
-          {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
         
