@@ -4,6 +4,7 @@ import Navbar from './components/Navbar';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import AdminDashboard from './pages/AdminDashboard';
+import UserDashboard from './pages/UserDashboard';
 
 // Lazy load Home (which contains Hero3D with Three.js)
 const Home = lazy(() => import('./pages/Home'));
@@ -57,6 +58,14 @@ function App() {
                 <AdminDashboard />
               </ProtectedRoute>
             } 
+          />
+          <Route 
+            path="/account" 
+            element={
+              <ProtectedRoute>
+                <UserDashboard />
+              </ProtectedRoute>
+            }
           />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

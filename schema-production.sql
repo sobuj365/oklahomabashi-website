@@ -16,6 +16,12 @@ CREATE TABLE IF NOT EXISTS users (
   role TEXT DEFAULT 'user', -- 'user', 'admin', 'volunteer'
   avatar_url TEXT,
   bio TEXT,
+  billing_address1 TEXT,
+  billing_address2 TEXT,
+  billing_city TEXT,
+  billing_state TEXT,
+  billing_zip TEXT,
+  billing_country TEXT,
   newsletter_subscribed BOOLEAN DEFAULT 1,
   is_active BOOLEAN DEFAULT 1,
   created_at TEXT DEFAULT CURRENT_TIMESTAMP,

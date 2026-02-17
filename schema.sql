@@ -4,6 +4,13 @@ CREATE TABLE IF NOT EXISTS users (
     email TEXT UNIQUE NOT NULL,
     password_hash TEXT NOT NULL,
     full_name TEXT,
+    phone TEXT,
+    billing_address1 TEXT,
+    billing_address2 TEXT,
+    billing_city TEXT,
+    billing_state TEXT,
+    billing_zip TEXT,
+    billing_country TEXT,
     role TEXT DEFAULT 'user', -- 'user', 'admin', 'volunteer'
     created_at TEXT DEFAULT (datetime('now'))
 );

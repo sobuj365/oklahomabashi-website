@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Event } from '../types';
+import { api } from '../services/api';
 
 interface Props {
   event: Event;
@@ -9,15 +10,31 @@ interface Props {
 
 const EventCard: React.FC<Props> = ({ event }) => {
   const navigate = useNavigate();
+  const [quantity, setQuantity] = useState(1);
+  const [isPurchasing, setIsPurchasing] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleGetTickets = () => {
+  const handleGetTickets = async () => {
     const token = localStorage.getItem('token');
     if (!token) {
       navigate('/login');
       return;
     }
-    // TODO: Implement ticket purchase flow
-    alert(`Ticket purchase for "${event.title}" - Feature coming soon!`);
+    setError('');
+    setIsPurchasing(true);
+
+    try {
+      const response = await api.tickets.purchase(event.id, quantity);
+      if (response?.url) {
+        window.location.href = response.url;
+      } else {
+        setError('Unable to start checkout.');
+      }
+    } catch (err: any) {
+      setError(err?.message || 'Ticket purchase failed.');
+    } finally {
+      setIsPurchasing(false);
+    }
   };
   return (
     <motion.div
@@ -48,11 +65,25 @@ const EventCard: React.FC<Props> = ({ event }) => {
         <p className="text-gray-400 text-sm mb-4 line-clamp-2">
           {event.description}
         </p>
+        <div className="flex items-center gap-3 mb-3">
+          <label className="text-xs uppercase tracking-widest text-gray-400">Qty</label>
+          <input
+            type="number"
+            min={1}
+            max={20}
+            value={quantity}
+            onChange={(event) => setQuantity(Math.max(1, Math.min(20, Number(event.target.value))))}
+            className="w-20 rounded-md bg-white/5 border border-white/10 px-3 py-2 text-white text-sm"
+          />
+          <span className="text-xs text-gray-500">Max 20</span>
+        </div>
+        {error && <div className="text-xs text-red-400 mb-3">{error}</div>}
         <button 
           onClick={handleGetTickets}
-          className="w-full py-3 bg-white/5 hover:bg-okla-600 border border-white/10 hover:border-okla-600 rounded-lg text-white font-semibold transition-all flex items-center justify-center gap-2"
+          disabled={isPurchasing}
+          className="w-full py-3 bg-white/5 hover:bg-okla-600 border border-white/10 hover:border-okla-600 rounded-lg text-white font-semibold transition-all flex items-center justify-center gap-2 disabled:opacity-50"
         >
-          <span>Get Tickets</span>
+          <span>{isPurchasing ? 'Redirecting...' : 'Get Tickets'}</span>
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
           </svg>

@@ -1,5 +1,5 @@
 import { API_URL, MOCK_EVENTS } from '../constants';
-import { User, Event, Ticket, AdminStats } from '../types';
+import { User, Event, Ticket, AdminStats, UserProfile, UserTicket } from '../types';
 
 // Helper to handle API requests
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
@@ -58,12 +58,20 @@ export const api = {
     get: (id: string) => request<Event>(`/events/${id}`),
   },
   tickets: {
-    purchase: (eventId: string) => 
-      request<{success: boolean, ticketId: string}>('/tickets/purchase', {
+    purchase: (eventId: string, quantity: number) => 
+      request<{ sessionId: string; url: string }>('/tickets/purchase', {
         method: 'POST',
-        body: JSON.stringify({ event_id: eventId })
+        body: JSON.stringify({ event_id: eventId, quantity })
       }),
-    list: () => request<Ticket[]>('/user/tickets'),
+    list: () => request<UserTicket[]>('/user/tickets'),
+  },
+  user: {
+    profile: () => request<UserProfile>('/user/profile'),
+    updateProfile: (data: Partial<UserProfile>) =>
+      request<{ success: boolean }>('/user/profile', {
+        method: 'PUT',
+        body: JSON.stringify(data)
+      })
   },
   admin: {
     stats: () => request<AdminStats>('/admin/stats'),

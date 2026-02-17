@@ -452,6 +452,124 @@ export default {
         }, { headers: corsHeaders });
       }
 
+      // GET /user/profile
+      if (path === '/user/profile' && request.method === 'GET') {
+        const user = await verifyJWT(request, env.JWT_SECRET);
+        if (!user) {
+          return Response.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders });
+        }
+
+        const userRecord = await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(user.userId).first();
+
+        if (!userRecord) {
+          return Response.json({ error: 'User not found' }, { status: 404, headers: corsHeaders });
+        }
+
+        return Response.json({
+          id: userRecord.id,
+          email: userRecord.email,
+          full_name: userRecord.full_name,
+          role: userRecord.role,
+          phone: userRecord.phone,
+          billing_address1: userRecord.billing_address1,
+          billing_address2: userRecord.billing_address2,
+          billing_city: userRecord.billing_city,
+          billing_state: userRecord.billing_state,
+          billing_zip: userRecord.billing_zip,
+          billing_country: userRecord.billing_country,
+          created_at: userRecord.created_at,
+        }, { headers: corsHeaders });
+      }
+
+      // PUT /user/profile
+      if (path === '/user/profile' && request.method === 'PUT') {
+        const user = await verifyJWT(request, env.JWT_SECRET);
+        if (!user) {
+          return Response.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders });
+        }
+
+        let body;
+        try {
+          body = await request.json();
+        } catch {
+          return Response.json({ error: 'Invalid JSON' }, { status: 400, headers: corsHeaders });
+        }
+
+        const {
+          full_name,
+          email,
+          phone,
+          billing_address1,
+          billing_address2,
+          billing_city,
+          billing_state,
+          billing_zip,
+          billing_country
+        } = body;
+
+        if (email && !validateEmail(email)) {
+          return Response.json({ error: 'Invalid email' }, { status: 400, headers: corsHeaders });
+        }
+
+        if (full_name && !validateFullName(full_name)) {
+          return Response.json({ error: 'Invalid full name' }, { status: 400, headers: corsHeaders });
+        }
+
+        const fields = {
+          full_name: full_name ?? null,
+          email: email ?? null,
+          phone: phone ?? null,
+          billing_address1: billing_address1 ?? null,
+          billing_address2: billing_address2 ?? null,
+          billing_city: billing_city ?? null,
+          billing_state: billing_state ?? null,
+          billing_zip: billing_zip ?? null,
+          billing_country: billing_country ?? null
+        };
+
+        const hasUpdate = Object.values(fields).some((value) => value !== null);
+        if (!hasUpdate) {
+          return Response.json({ error: 'No fields provided' }, { status: 400, headers: corsHeaders });
+        }
+
+        try {
+          await env.DB.prepare(
+            `UPDATE users SET
+              full_name = COALESCE(?, full_name),
+              email = COALESCE(?, email),
+              phone = COALESCE(?, phone),
+              billing_address1 = COALESCE(?, billing_address1),
+              billing_address2 = COALESCE(?, billing_address2),
+              billing_city = COALESCE(?, billing_city),
+              billing_state = COALESCE(?, billing_state),
+              billing_zip = COALESCE(?, billing_zip),
+              billing_country = COALESCE(?, billing_country),
+              updated_at = ?
+            WHERE id = ?`
+          ).bind(
+            fields.full_name,
+            fields.email,
+            fields.phone,
+            fields.billing_address1,
+            fields.billing_address2,
+            fields.billing_city,
+            fields.billing_state,
+            fields.billing_zip,
+            fields.billing_country,
+            new Date().toISOString(),
+            user.userId
+          ).run();
+        } catch (err) {
+          const message = err?.message || 'Update failed';
+          if (message.includes('UNIQUE')) {
+            return Response.json({ error: 'Email already in use' }, { status: 409, headers: corsHeaders });
+          }
+          throw err;
+        }
+
+        return Response.json({ success: true }, { headers: corsHeaders });
+      }
+
       // ====================================================================
       // TICKET ROUTES
       // ====================================================================

@@ -14,7 +14,7 @@ const Login = () => {
       const data = await api.auth.login(email, password);
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
-      navigate('/dashboard');
+      navigate(data.user.role === 'admin' ? '/dashboard' : '/account');
     } catch (err: any) {
       setError(err.message || 'Login failed');
     }

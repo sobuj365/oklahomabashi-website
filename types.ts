@@ -5,6 +5,17 @@ export interface User {
   role: 'user' | 'admin' | 'volunteer';
 }
 
+export interface UserProfile extends User {
+  phone?: string | null;
+  billing_address1?: string | null;
+  billing_address2?: string | null;
+  billing_city?: string | null;
+  billing_state?: string | null;
+  billing_zip?: string | null;
+  billing_country?: string | null;
+  created_at?: string;
+}
+
 export interface Event {
   id: string;
   title: string;
@@ -23,10 +34,20 @@ export interface Event {
 export interface Ticket {
   id: string;
   event_id: string;
-  event_title: string;
-  event_date: number;
   status: 'valid' | 'used';
   qr_code: string;
+}
+
+export interface UserTicket {
+  id: string;
+  event_id: string;
+  status: 'valid' | 'used' | 'refunded' | 'cancelled';
+  qr_code: string;
+  created_at: string;
+  title: string;
+  date: number;
+  location: string;
+  price: number;
 }
 
 export interface AdminStats {

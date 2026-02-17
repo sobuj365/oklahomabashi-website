@@ -6,6 +6,7 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userRole, setUserRole] = useState<'user' | 'admin' | 'volunteer' | null>(null);
   const location = useLocation();
 
   useEffect(() => {
@@ -18,6 +19,9 @@ const Navbar = () => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     setIsLoggedIn(!!token);
+    const userStr = localStorage.getItem('user');
+    const user = userStr ? JSON.parse(userStr) : null;
+    setUserRole(user?.role || null);
   }, [location]); // Re-check when route changes
 
   const handleLogout = () => {
@@ -63,8 +67,8 @@ const Navbar = () => {
             
             {isLoggedIn ? (
               <div className="flex items-center space-x-4">
-                <Link to="/dashboard" className="text-sm font-medium text-okla-500 hover:text-okla-400 transition-all">
-                  Dashboard
+                <Link to={userRole === 'admin' ? '/dashboard' : '/account'} className="text-sm font-medium text-okla-500 hover:text-okla-400 transition-all">
+                  {userRole === 'admin' ? 'Admin' : 'Account'}
                 </Link>
                 <button 
                   onClick={handleLogout}
@@ -121,11 +125,11 @@ const Navbar = () => {
               {isLoggedIn ? (
                 <>
                   <Link 
-                    to="/dashboard"
+                    to={userRole === 'admin' ? '/dashboard' : '/account'}
                     onClick={() => setMobileMenuOpen(false)}
                     className="block px-3 py-3 text-base font-medium text-okla-500 hover:bg-white/5 rounded-md"
                   >
-                    Dashboard
+                    {userRole === 'admin' ? 'Admin' : 'Account'}
                   </Link>
                   <button
                     onClick={() => {
