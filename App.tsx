@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from 'react';
-import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -37,7 +37,7 @@ const ProtectedRoute = ({ children, role }: { children: React.ReactNode, role?: 
 
 function App() {
   return (
-    <HashRouter>
+    <BrowserRouter>
       <div className="min-h-screen bg-okla-dark text-white selection:bg-okla-500 selection:text-white">
         <Navbar />
         <Routes>
@@ -68,7 +68,7 @@ function App() {
             </div>
         </footer>
       </div>
-    </HashRouter>
+    </BrowserRouter>
   );
 }
 
