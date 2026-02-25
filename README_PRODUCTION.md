@@ -323,7 +323,7 @@ All emails sent via **Resend API** (or SMTP-compatible service)
 
 ### Deployment (Part 3: Stripe)
 
-- [ ] Create webhook endpoint: `https://api.oklahomabashi.com/webhooks/stripe`
+- [ ] Create webhook endpoint: `https://oklahomabashi-api.sobuj1.workers.dev/webhooks/stripe`
 - [ ] Select events: `checkout.session.completed`, `charge.refunded`
 - [ ] Copy webhook secret to Cloudflare
 

@@ -1,6 +1,6 @@
 # OKLAHOMABASHI API Endpoint Reference
 
-**Base URL**: `https://api.oklahomabashi.com`
+**Base URL**: `https://oklahomabashi-api.sobuj1.workers.dev`
 
 ---
 
@@ -687,7 +687,7 @@ All errors follow this format:
 
 ```bash
 # Register
-curl -X POST https://api.oklahomabashi.com/auth/register \
+curl -X POST https://oklahomabashi-api.sobuj1.workers.dev/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "email": "test@example.com",
@@ -696,7 +696,7 @@ curl -X POST https://api.oklahomabashi.com/auth/register \
   }'
 
 # Login
-curl -X POST https://api.oklahomabashi.com/auth/login \
+curl -X POST https://oklahomabashi-api.sobuj1.workers.dev/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "email": "test@example.com",
@@ -704,7 +704,7 @@ curl -X POST https://api.oklahomabashi.com/auth/login \
   }'
 
 # Get events
-curl https://api.oklahomabashi.com/events
+curl https://oklahomabashi-api.sobuj1.workers.dev/events
 ```
 
 ### Using Postman

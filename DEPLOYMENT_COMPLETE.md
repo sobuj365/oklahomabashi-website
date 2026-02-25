@@ -122,7 +122,7 @@
 
 1. Go to **Stripe Dashboard** → **Developers** → **Webhooks**
 2. Click **Add endpoint**
-3. **Endpoint URL**: `https://api.oklahomabashi.com/webhooks/stripe`
+3. **Endpoint URL**: `https://oklahomabashi-api.sobuj1.workers.dev/webhooks/stripe`
 4. **Events to send**: Select:
    - `checkout.session.completed`
    - `charge.refunded`
@@ -204,7 +204,7 @@ If not using GitHub:
 4. Go to **Environment variables**
 5. Add:
    - **Name**: `VITE_API_URL`
-   - **Value**: `https://api.oklahomabashi.com`
+   - **Value**: `https://oklahomabashi-api.sobuj1.workers.dev`
    - **Environment**: Production
 
 ---
@@ -216,7 +216,7 @@ If not using GitHub:
 1. Create file: `.env.local` in project root
 2. Add:
    ```env
-   VITE_API_URL=https://api.oklahomabashi.com
+   VITE_API_URL=https://oklahomabashi-api.sobuj1.workers.dev
    VITE_JWT_STORAGE_KEY=oklahomabashi_token
    ```
 
@@ -228,7 +228,7 @@ If not using GitHub:
 
 **Test 1: Register User**
 ```bash
-curl -X POST https://api.oklahomabashi.com/auth/register \
+curl -X POST https://oklahomabashi-api.sobuj1.workers.dev/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "email": "test@example.com",
@@ -244,7 +244,7 @@ Expected response:
 
 **Test 2: Login**
 ```bash
-curl -X POST https://api.oklahomabashi.com/auth/login \
+curl -X POST https://oklahomabashi-api.sobuj1.workers.dev/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "email": "test@example.com",
@@ -267,7 +267,7 @@ Expected response:
 
 **Test 3: Get Events (Public)**
 ```bash
-curl https://api.oklahomabashi.com/events
+curl https://oklahomabashi-api.sobuj1.workers.dev/events
 ```
 
 Expected response:
@@ -278,7 +278,7 @@ Expected response:
 
 **Test 4: Get User Profile (Protected)**
 ```bash
-curl https://api.oklahomabashi.com/auth/profile \
+curl https://oklahomabashi-api.sobuj1.workers.dev/auth/profile \
   -H "Authorization: Bearer YOUR_JWT_TOKEN_HERE"
 ```
 
@@ -302,7 +302,7 @@ Expected response:
 
 2. **Test Create Event**:
    ```bash
-   curl -X POST https://api.oklahomabashi.com/admin/events \
+   curl -X POST https://oklahomabashi-api.sobuj1.workers.dev/admin/events \
      -H "Authorization: Bearer YOUR_TOKEN" \
      -H "Content-Type: application/json" \
      -d '{

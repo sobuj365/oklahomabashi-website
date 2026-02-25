@@ -192,7 +192,7 @@ Now you have all three accounts. You need to collect the special "keys" that let
 1. Still in Stripe Developers section
 2. Click **"Webhooks"** (left menu)
 3. Click **"Add Endpoint"** button
-4. Type URL: `https://api.oklahomabashi.com/webhooks/stripe`
+4. Type URL: `https://oklahomabashi-api.sobuj1.workers.dev/webhooks/stripe`
    - (Replace `oklahomabashi.com` with YOUR domain)
 5. Click **"Select Events"**
 6. Search for and select:
@@ -489,7 +489,7 @@ Cloudflare Pages will automatically build and deploy your website whenever you u
 **Environment variables:**
 - Click **"Add Variable"** in the build settings section
 - Name: `VITE_API_URL`
-- Value: `https://api.oklahomabashi.com`
+- Value: `https://oklahomabashi-api.sobuj1.workers.dev`
 - Click **"Save"**
 
 12. Click **"Save and Deploy"**
@@ -539,7 +539,7 @@ Before you launch, you need to make sure everything is working.
 **Step 2: Test the API**
 
 1. Open a new tab
-2. Go to: `https://api.oklahomabashi.com/events`
+2. Go to: `https://oklahomabashi-api.sobuj1.workers.dev/events`
 3. You should see a JSON response (looks like computer code)
 4. If you see `[]` (empty brackets), that's normal - no events yet!
 5. **If you see an error**, your Worker might not be deployed correctly
@@ -687,7 +687,7 @@ Once everything is tested and working, you're ready for real customers!
 Before you tell people about your website, verify:
 
 - [ ] Website loads at `https://oklahomabashi.com` (green lock icon)
-- [ ] API works at `https://api.oklahomabashi.com/events`
+- [ ] API works at `https://oklahomabashi-api.sobuj1.workers.dev/events`
 - [ ] User registration works
 - [ ] Admin dashboard loads
 - [ ] Can create events
@@ -742,7 +742,7 @@ You're ready to launch! You can now:
 
 **Solution**:
 1. Check Pages environment variable:
-   - `VITE_API_URL` should be `https://api.oklahomabashi.com`
+   - `VITE_API_URL` should be `https://oklahomabashi-api.sobuj1.workers.dev`
 2. Redeploy Pages (go to Pages → click your site → click "Deployments" → click latest → click "Retry deployment")
 
 ---

@@ -6,11 +6,31 @@
  * - KV (KV Namespace)
  * - JWT_SECRET (Encrypted Env Var) - Default: 'your-secret-key-change-in-production'
  * - STRIPE_SECRET_KEY (Encrypted Env Var, optional)
- * - ALLOWED_ORIGIN (Encrypted Env Var) - Default: 'https://oklahomabashi.com'
+ * - ALLOWED_ORIGIN / ALLOWED_ORIGINS (Encrypted Env Var, optional)
  */
 
-// Get CORS origin from environment, with fallback
-const getAllowedOrigin = (env) => env.ALLOWED_ORIGIN || 'https://oklahomabashi.com';
+const DEFAULT_ALLOWED_ORIGINS = [
+  'https://oklahomabashi.com',
+  'https://oklahomabashi.pages.dev',
+];
+
+const getAllowedOrigins = (env) => {
+  const configured = env.ALLOWED_ORIGINS || env.ALLOWED_ORIGIN;
+  if (!configured) return DEFAULT_ALLOWED_ORIGINS;
+
+  return configured
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+};
+
+const resolveCorsOrigin = (requestOrigin, allowedOrigins) => {
+  if (requestOrigin && allowedOrigins.includes(requestOrigin)) {
+    return requestOrigin;
+  }
+
+  return allowedOrigins[0] || DEFAULT_ALLOWED_ORIGINS[0];
+};
 
 const getCorsHeaders = (origin) => ({
   'Access-Control-Allow-Origin': origin,
@@ -177,19 +197,19 @@ async function checkRateLimit(kv, key, limit = 5, windowSeconds = 60) {
 // Router Handler
 export default {
   async fetch(request, env, ctx) {
-    const origin = request.headers.get('Origin') || getAllowedOrigin(env);
+    const allowedOrigins = getAllowedOrigins(env);
+    const origin = resolveCorsOrigin(request.headers.get('Origin'), allowedOrigins);
     const corsHeaders = getCorsHeaders(origin);
     
     if (request.method === 'OPTIONS') {
       return new Response(null, { headers: corsHeaders });
     }
 
-      const url = new URL(request.url);
-      if (url.protocol === 'http:') {
-        url.protocol = 'https:';
-        return Response.redirect(url.toString(), 301);
-      }
     const url = new URL(request.url);
+    if (url.protocol === 'http:') {
+      url.protocol = 'https:';
+      return Response.redirect(url.toString(), 301);
+    }
     const path = url.pathname;
 
     try {

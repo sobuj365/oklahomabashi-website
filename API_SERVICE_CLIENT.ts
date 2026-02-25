@@ -65,7 +65,7 @@ class APIClient {
   private baseUrl: string;
   private token: string | null = null;
 
-  constructor(baseUrl: string = import.meta.env.VITE_API_URL || 'https://api.oklahomabashi.com') {
+  constructor(baseUrl: string = import.meta.env.VITE_API_URL || 'https://oklahomabashi-api.sobuj1.workers.dev') {
     this.baseUrl = baseUrl.replace(/\/$/, ''); // Remove trailing slash
     this.loadToken();
   }

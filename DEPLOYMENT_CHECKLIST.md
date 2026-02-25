@@ -74,7 +74,7 @@ Before you begin ANY deployment steps:
   - Still in Stripe
   - Go: Developers → Webhooks
   - Click "Add Endpoint"
-  - URL: `https://api.oklahomabashi.com/webhooks/stripe`
+  - URL: `https://oklahomabashi-api.sobuj1.workers.dev/webhooks/stripe`
   - Select events: `checkout.session.completed`, `charge.refunded`
   - Copy **Signing Secret** → Save to text file
   - **Status**: ✅ Have webhook secret (starts with `whsec_`)
@@ -227,7 +227,7 @@ JWT_SECRET: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
   - **Status**: ✅ API route created
 
 - [ ] **Test API is Working**
-  - Open browser, go to: `https://api.oklahomabashi.com/events`
+  - Open browser, go to: `https://oklahomabashi-api.sobuj1.workers.dev/events`
   - You should see: `[]` or some JSON
   - **Status**: ✅ Backend working!
 
@@ -288,7 +288,7 @@ JWT_SECRET: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 - [ ] **Add Environment Variable**
   - In build settings, click "Add Variable"
   - Name: `VITE_API_URL`
-  - Value: `https://api.oklahomabashi.com`
+  - Value: `https://oklahomabashi-api.sobuj1.workers.dev`
   - Click "Save"
   - **Status**: ✅ Environment variable added
 
@@ -327,7 +327,7 @@ JWT_SECRET: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
   - **Status**: ✅ Website accessible
 
 - [ ] **Test API Works**
-  - Go to: `https://api.oklahomabashi.com/events`
+  - Go to: `https://oklahomabashi-api.sobuj1.workers.dev/events`
   - Should see JSON response (like: `[]`)
   - **Status**: ✅ API accessible
 
@@ -535,7 +535,7 @@ JWT_SECRET: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 By the time you finish:
 
 - [ ] Website live at `oklahomabashi.com` ✅
-- [ ] API working at `api.oklahomabashi.com` ✅
+- [ ] API working at `oklahomabashi-api.sobuj1.workers.dev` ✅
 - [ ] Database created with all tables ✅
 - [ ] Admin account created ✅
 - [ ] Test events created ✅

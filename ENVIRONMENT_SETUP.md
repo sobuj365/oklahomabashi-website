@@ -6,7 +6,7 @@ Create `.env.local` in your frontend root directory:
 
 ```bash
 # API Configuration
-VITE_API_URL=https://api.oklahomabashi.com
+VITE_API_URL=https://oklahomabashi-api.sobuj1.workers.dev
 
 # Feature Flags
 VITE_ENABLE_ANALYTICS=true
@@ -124,7 +124,7 @@ These must be set in **Cloudflare Dashboard** → **Workers** → **Settings** �
 
 1. Still in **Developers** → Click **Webhooks**
 2. Click **Add endpoint**
-3. **Endpoint URL**: `https://api.oklahomabashi.com/webhooks/stripe`
+3. **Endpoint URL**: `https://oklahomabashi-api.sobuj1.workers.dev/webhooks/stripe`
 4. **Events**: Select:
    - `checkout.session.completed`
    - `charge.refunded`
@@ -155,7 +155,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'api.oklahomabashi.com',
+        hostname: 'oklahomabashi-api.sobuj1.workers.dev',
       },
       {
         protocol: 'https',
@@ -188,7 +188,7 @@ export default defineConfig(({ mode }) => {
       port: 3000,
       proxy: {
         '/api': {
-          target: env.VITE_API_URL || 'https://api.oklahomabashi.com',
+          target: env.VITE_API_URL || 'https://oklahomabashi-api.sobuj1.workers.dev',
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, ''),
         },
@@ -288,7 +288,7 @@ Before deploying to production, verify:
 - [ ] **STRIPE_WEBHOOK_SECRET** matches live endpoint
 - [ ] **RESEND_API_KEY** is active and not revoked
 - [ ] Domain is correctly set in Cloudflare
-- [ ] API URL is `https://api.oklahomabashi.com`
+- [ ] API URL is `https://oklahomabashi-api.sobuj1.workers.dev`
 - [ ] Frontend uses environment variables (not hardcoded)
 - [ ] No secrets in version control
 - [ ] Worker bindings are correctly named
