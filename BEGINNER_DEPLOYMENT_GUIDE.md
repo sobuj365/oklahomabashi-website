@@ -122,7 +122,7 @@ Stripe processes payments when people buy event tickets or donate.
 5. Click **"Next"**
 6. Complete Stripe's additional questions:
    - Organization description
-   - Website URL: `https://oklahomabashi.com`
+   - Website URL: `https://oklahomabashi.pages.dev`
    - Representative name
    - Representative email
 7. Click **"Save"** when you're done
@@ -530,7 +530,7 @@ Before you launch, you need to make sure everything is working.
 **Step 1: Visit your website**
 
 1. Open your browser (Chrome, Firefox, Safari, Edge)
-2. Go to: `https://oklahomabashi.com`
+2. Go to: `https://oklahomabashi.pages.dev`
 3. You should see your website homepage
 4. **If you see an error**, check that:
    - Your domain is using Cloudflare DNS (from Part 1B)
@@ -548,7 +548,7 @@ Before you launch, you need to make sure everything is working.
 
 **Step 1: Create a test account**
 
-1. Go to your website: `https://oklahomabashi.com`
+1. Go to your website: `https://oklahomabashi.pages.dev`
 2. Look for **"Sign Up"** or **"Register"** button
 3. Click it
 4. Fill in:
@@ -676,7 +676,7 @@ Once everything is tested and working, you're ready for real customers!
 
 ### Step 6C: Verify Everything Still Works
 
-1. Log into your website: `https://oklahomabashi.com`
+1. Log into your website: `https://oklahomabashi.pages.dev`
 2. Try creating an account
 3. Try buying a test ticket
 4. **This time, real Stripe webhook should process it**
@@ -686,7 +686,7 @@ Once everything is tested and working, you're ready for real customers!
 
 Before you tell people about your website, verify:
 
-- [ ] Website loads at `https://oklahomabashi.com` (green lock icon)
+- [ ] Website loads at `https://oklahomabashi.pages.dev` (green lock icon)
 - [ ] API works at `https://oklahomabashi-api.sobuj1.workers.dev/events`
 - [ ] User registration works
 - [ ] Admin dashboard loads

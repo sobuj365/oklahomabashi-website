@@ -13,7 +13,14 @@
  * • ALLOWED_ORIGINS (JSON string) - CORS allowed domains
  */
 
-const ALLOWED_ORIGINS_DEFAULT = ['https://oklahomabashi.com', 'https://oklahomabashi.pages.dev', 'http://localhost:3000'];
+const ALLOWED_ORIGINS_DEFAULT = [
+  'https://oklahomabashi.pages.dev',
+  'http://localhost:3000',
+  'http://localhost:5173',
+  'http://localhost:4173',
+];
+
+const uniqueOrigins = (origins) => Array.from(new Set(origins.filter(Boolean)));
 
 const parseAllowedOrigins = (env) => {
   const raw = env?.ALLOWED_ORIGINS;
@@ -21,9 +28,11 @@ const parseAllowedOrigins = (env) => {
 
   try {
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : ALLOWED_ORIGINS_DEFAULT;
+    if (!Array.isArray(parsed)) return ALLOWED_ORIGINS_DEFAULT;
+    return uniqueOrigins([...ALLOWED_ORIGINS_DEFAULT, ...parsed.map((entry) => String(entry).trim())]);
   } catch {
-    return raw.split(',').map((entry) => entry.trim()).filter(Boolean);
+    const configured = raw.split(',').map((entry) => entry.trim()).filter(Boolean);
+    return uniqueOrigins([...ALLOWED_ORIGINS_DEFAULT, ...configured]);
   }
 };
 
@@ -292,7 +301,7 @@ export default {
       return Response.redirect(url.toString(), 301);
     }
 
-    const origin = request.headers.get('Origin') || 'https://oklahomabashi.com';
+    const origin = request.headers.get('Origin') || 'https://oklahomabashi.pages.dev';
     const corsHeaders = getCorsHeaders(origin, env);
     
     if (request.method === 'OPTIONS') {
@@ -646,8 +655,8 @@ export default {
             'line_items[0][price_data][product_data][name]': event.title,
             'line_items[0][quantity]': String(parsedQuantity),
             'mode': 'payment',
-            'success_url': `https://oklahomabashi.com/ticket-success?session_id={CHECKOUT_SESSION_ID}`,
-            'cancel_url': `https://oklahomabashi.com/events/${event_id}`,
+            'success_url': `https://oklahomabashi.pages.dev/ticket-success?session_id={CHECKOUT_SESSION_ID}`,
+            'cancel_url': `https://oklahomabashi.pages.dev/events/${event_id}`,
             'client_reference_id': `${user.userId}:${event_id}:${parsedQuantity}`,
             'customer_email': user.email,
           }),
@@ -743,8 +752,8 @@ export default {
             'line_items[0][price_data][product_data][name]': 'Donation to OKLAHOMABASHI',
             'line_items[0][quantity]': '1',
             'mode': 'payment',
-            'success_url': `https://oklahomabashi.com/donate-success?amount=${amount}`,
-            'cancel_url': `https://oklahomabashi.com/donate`,
+            'success_url': `https://oklahomabashi.pages.dev/donate-success?amount=${amount}`,
+            'cancel_url': `https://oklahomabashi.pages.dev/donate`,
             'customer_email': donor_email,
           }),
         });
@@ -1069,7 +1078,7 @@ export default {
 
     } catch (err) {
       console.error('Worker error:', err);
-      const corsHeaders = getCorsHeaders(request.headers.get('Origin') || 'https://oklahomabashi.com', env);
+      const corsHeaders = getCorsHeaders(request.headers.get('Origin') || 'https://oklahomabashi.pages.dev', env);
       return Response.json(
         { error: err.message || 'Internal server error' },
         { status: 500, headers: corsHeaders }

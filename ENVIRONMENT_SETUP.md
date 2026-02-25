@@ -61,10 +61,10 @@ These must be set in **Cloudflare Dashboard** → **Workers** → **Settings** �
 
 **ALLOWED_ORIGINS** (Type: Plaintext)
 - **Description**: CORS allowed domains (JSON array)
-- **Default**: `["https://oklahomabashi.com", "http://localhost:3000"]`
+- **Default**: `["https://oklahomabashi.pages.dev", "http://localhost:3000"]`
 - **Format**:
   ```json
-  ["https://oklahomabashi.com", "https://www.oklahomabashi.com"]
+  ["https://oklahomabashi.pages.dev", "https://www.oklahomabashi.com"]
   ```
 
 ---

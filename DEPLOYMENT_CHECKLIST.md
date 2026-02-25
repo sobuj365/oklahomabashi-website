@@ -310,7 +310,7 @@ JWT_SECRET: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 
 - [ ] **Verify Website Loads**
   - Open browser
-  - Go to: `https://oklahomabashi.com`
+  - Go to: `https://oklahomabashi.pages.dev`
   - You should see your website
   - **Status**: ✅ Website live!
 
@@ -321,7 +321,7 @@ JWT_SECRET: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 ### Test Basic Functionality
 
 - [ ] **Test Website Loads**
-  - Go to: `https://oklahomabashi.com`
+  - Go to: `https://oklahomabashi.pages.dev`
   - Should load in under 3 seconds
   - Should have green 🔒 lock icon
   - **Status**: ✅ Website accessible
@@ -459,7 +459,7 @@ JWT_SECRET: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 ### Final Verification
 
 - [ ] **Full System Check**
-  - [ ] Website loads at `https://oklahomabashi.com`
+  - [ ] Website loads at `https://oklahomabashi.pages.dev`
   - [ ] Can register users
   - [ ] Can login as admin
   - [ ] Can create events

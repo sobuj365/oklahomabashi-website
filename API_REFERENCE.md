@@ -671,7 +671,7 @@ All errors follow this format:
 ## CORS Policy
 
 **Allowed Origins**:
-- `https://oklahomabashi.com`
+- `https://oklahomabashi.pages.dev`
 - `https://www.oklahomabashi.com`
 - `http://localhost:3000` (dev)
 

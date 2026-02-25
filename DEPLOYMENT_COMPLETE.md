@@ -318,7 +318,7 @@ Expected response:
 
 ### Test 4.3: Frontend Connection
 
-1. Go to `https://oklahomabashi.com`
+1. Go to `https://oklahomabashi.pages.dev`
 2. Click **Sign Up**
 3. Register with test account
 4. Login
@@ -389,7 +389,7 @@ Expected response:
 1. Go to Worker
 2. Check `ALLOWED_ORIGINS` handling in code
 3. Ensure your domain is listed
-4. Test with: `curl -H "Origin: https://oklahomabashi.com" ...`
+4. Test with: `curl -H "Origin: https://oklahomabashi.pages.dev" ...`
 
 ### Problem: "JWT verification failed"
 **Solution**:

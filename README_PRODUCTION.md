@@ -467,7 +467,7 @@ For team development:
 
 Your deployment is successful when:
 
-✅ `https://oklahomabashi.com` loads  
+✅ `https://oklahomabashi.pages.dev` loads  
 ✅ Can register new user account  
 ✅ Can login successfully  
 ✅ Can view events  

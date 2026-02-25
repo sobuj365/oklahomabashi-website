@@ -34,8 +34,8 @@ Go to Settings → Variables → Add variable
 
 2. **ALLOWED_ORIGIN** (Optional)
    - Type: Plaintext
-   - Value: `https://oklahomabashi.com` (or your domain)
-   - Default: `https://oklahomabashi.com` (if not set)
+   - Value: `https://oklahomabashi.pages.dev` (or your domain)
+   - Default: `https://oklahomabashi.pages.dev` (if not set)
 
 3. **STRIPE_SECRET_KEY** (Optional - for future payment processing)
    - Type: Secret

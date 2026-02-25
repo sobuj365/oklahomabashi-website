@@ -10,18 +10,34 @@
  */
 
 const DEFAULT_ALLOWED_ORIGINS = [
-  'https://oklahomabashi.com',
   'https://oklahomabashi.pages.dev',
+  'http://localhost:3000',
+  'http://localhost:5173',
+  'http://localhost:4173',
 ];
+
+const uniqueOrigins = (origins) => Array.from(new Set(origins.filter(Boolean)));
 
 const getAllowedOrigins = (env) => {
   const configured = env.ALLOWED_ORIGINS || env.ALLOWED_ORIGIN;
   if (!configured) return DEFAULT_ALLOWED_ORIGINS;
 
-  return configured
+  if (configured.trim().startsWith('[')) {
+    try {
+      const parsed = JSON.parse(configured);
+      if (Array.isArray(parsed)) {
+        return uniqueOrigins([...DEFAULT_ALLOWED_ORIGINS, ...parsed.map((origin) => String(origin).trim())]);
+      }
+    } catch {
+    }
+  }
+
+  const configuredOrigins = configured
     .split(',')
     .map((origin) => origin.trim())
     .filter(Boolean);
+
+  return uniqueOrigins([...DEFAULT_ALLOWED_ORIGINS, ...configuredOrigins]);
 };
 
 const resolveCorsOrigin = (requestOrigin, allowedOrigins) => {
