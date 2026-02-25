@@ -13,7 +13,7 @@
  * • ALLOWED_ORIGINS (JSON string) - CORS allowed domains
  */
 
-const ALLOWED_ORIGINS_DEFAULT = ['https://oklahomabashi.com', 'http://localhost:3000'];
+const ALLOWED_ORIGINS_DEFAULT = ['https://oklahomabashi.com', 'https://oklahomabashi.pages.dev', 'http://localhost:3000'];
 
 const parseAllowedOrigins = (env) => {
   const raw = env?.ALLOWED_ORIGINS;
